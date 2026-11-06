@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>डेटा व्यवस्थापक - तुंगी बुद्रुक पारदर्शकता पोर्टल | Data Manager</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <!-- SheetJS for Excel Reading -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+</head>
+<body class="bg-gray-100 text-gray-800 min-h-screen p-4 sm:p-8">
+  <div class="max-w-4xl mx-auto">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-300">
+      <div>
+        <a href="index.html" class="text-xs font-bold text-emerald-700 hover:text-emerald-800 inline-flex items-center mb-1">
+          &larr; मुख्य डॅशबोर्डवर परत जा
+        </a>
+        <h1 class="text-2xl font-black text-gray-900 devanagari-bold">
+          ग्रामपंचायत डेटा व्यवस्थापक (Data Manager & Excel Importer)
+        </h1>
+        <p class="text-xs text-gray-500">
+          eGramSwaraj वरून डाउनलोड केलेले एक्सेल अपलोड करा किंवा नवीन कामांची नोंद जोडा.
+        </p>
+      </div>
+      <a 
+        href="index.html" 
+        class="px-4 py-2 rounded-xl text-xs font-bold bg-emerald-700 text-white hover:bg-emerald-800 shadow transition">
+        डॅशबोर्ड उघडा
+      </a>
+    </div>
+
+    <!-- Instructions Banner -->
+    <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 mb-6 text-xs text-emerald-900 leading-relaxed">
+      <div class="font-bold text-sm mb-1 text-emerald-800">
+        💡 eGramSwaraj वरून नवीन डेटा कसा मिळवायचा? (Browser + Urban VPN)
+      </div>
+      <ol class="list-decimal list-inside space-y-1">
+        <li>तुमच्या ब्राऊझरमध्ये <strong>Urban VPN</strong> चालू करा आणि <a href="https://egramswaraj.gov.in" target="_blank" class="underline font-bold">egramswaraj.gov.in</a> उघडा.</li>
+        <li>महाराष्ट्र &rarr; लातूर &rarr; औसा &rarr; तुंगी बु. (LGD: 179414) निवडून कॅप्चा टाका व अहवाल उघडा.</li>
+        <li>हिरव्या रंगाच्या <strong>"Export To Excel"</strong> बटनावर क्लिक करून एक्सेल फाइल डाउनलोड करा.</li>
+        <li>ती एक्सेल फाईल खाली दिलेल्या बॉक्समध्ये ड्रॅग-अँड-ड्रॉप (Drag & Drop) करा!</li>
+      </ol>
+    </div>
+
+    <!-- Drop Zone for Excel / CSV -->
+    <div class="bg-white rounded-3xl p-6 border-2 border-dashed border-emerald-400 hover:border-emerald-600 transition shadow-sm mb-8 text-center cursor-pointer" id="drop-zone" onclick="document.getElementById('file-input').click()">
+      <input type="file" id="file-input" accept=".xlsx, .xls, .csv, .json" class="hidden" onchange="handleFileSelect(event)" />
+      <div class="text-5xl text-emerald-600 mb-3">
+        <i class="fas fa-file-excel"></i>
+      </div>
+      <h3 class="text-base font-bold text-gray-800 devanagari-bold">
+        eGramSwaraj एक्सेल / CSV किंवा JSON फाईल येथे टाका
+      </h3>
+      <p class="text-xs text-gray-500 mt-1">
+        किंवा फाईल निवडण्यासाठी येथे क्लिक करा (.xlsx, .xls, .csv, .json)
+      </p>
+    </div>
+
+    <!-- Add New Work Form (Manual Entry) -->
+    <div class="bg-white rounded-3xl p-6 border border-gray-200 shadow-sm mb-8">
+      <h2 class="text-lg font-bold text-gray-900 devanagari-bold mb-4 flex items-center justify-between">
+        <span>नवीन कामाची नोंद मॅन्युअली जोडा (Add New Work)</span>
+        <span class="text-xs text-emerald-600 font-normal">फोटो व बिल संलग्न करा</span>
+      </h2>
+
+      <form id="add-work-form" onsubmit="handleManualAdd(event)" class="space-y-4 text-xs">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block font-bold text-gray-700 mb-1">कामाचे नाव (मराठीत):</label>
+            <input type="text" id="w-title" required placeholder="उदा. अंतर्गत रस्ता सिमेंटीकरण" class="w-full p-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-emerald-500" />
+          </div>
+
+          <div>
+            <label class="block font-bold text-gray-700 mb-1">कामाची जागा / ठिकाण (तुंगी बु.):</label>
+            <input type="text" id="w-location" required placeholder="उदा. वॉर्ड क्र. १, आंबेडकर नगर" class="w-full p-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-emerald-500" />
+          </div>
+
+          <div>
+            <label class="block font-bold text-gray-700 mb-1">व्हाउचर क्रमांक (Voucher No):</label>
+            <input type="text" id="w-voucherno" required placeholder="उदा. XVFC/2025-26/P/10" class="w-full p-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-emerald-500 font-mono" />
+          </div>
+
+          <div>
+            <label class="block font-bold text-gray-700 mb-1">व्हाउचर तारीख (Voucher Date):</label>
+            <input type="date" id="w-date" required class="w-full p-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-emerald-500" />
+          </div>
+
+          <div>
+            <label class="block font-bold text-gray-700 mb-1">कामाचा प्रकार (Category):</label>
+            <select id="w-category" class="w-full p-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-emerald-500">
+              <option value="roads">रस्ते व वाहतूक (Roads)</option>
+              <option value="water">पाणी पुरवठा (Water Supply)</option>
+              <option value="sanitation">स्वच्छता व सांडपाणी नाली (Sanitation)</option>
+              <option value="maintenance">दुरुस्ती व देखभाल (Maintenance)</option>
+              <option value="admin">प्रशासकीय कामे (Admin)</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block font-bold text-gray-700 mb-1">खर्च रक्कम (Amount in ₹):</label>
+            <input type="number" id="w-amount" required placeholder="उदा. 150000" class="w-full p-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-emerald-500" />
+          </div>
+
+          <div>
+            <label class="block font-bold text-gray-700 mb-1">लाभार्थी / कंत्राटदार नाव:</label>
+            <input type="text" id="w-payee" required placeholder="उदा. बंकट बाबू कावळे" class="w-full p-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-emerald-500" />
+          </div>
+
+          <div>
+            <label class="block font-bold text-gray-700 mb-1">बँक खाते क्रमांक (मास्क्ड):</label>
+            <input type="text" id="w-account" placeholder="उदा. ***************7947" value="***************7947" class="w-full p-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-emerald-500 font-mono" />
+          </div>
+
+          <div>
+            <label class="block font-bold text-gray-700 mb-1">संलग्न बिल PDF नाव:</label>
+            <input type="text" id="w-bill" placeholder="उदा. 177062095412~BILL.pdf" class="w-full p-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-emerald-500 font-mono" />
+          </div>
+
+          <div>
+            <label class="block font-bold text-gray-700 mb-1">कामाचा प्रत्यक्ष फोटो URL किंवा पाथ:</label>
+            <input type="text" id="w-photo" placeholder="उदा. assets/photos/road_work.jpg" class="w-full p-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-emerald-500" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-gray-700 mb-1">कामाचा मराठीत थोडक्यात तपशील (Villager Summary):</label>
+          <textarea id="w-desc" rows="2" placeholder="ग्रामस्थांना समजेल अशा सोप्या भाषेत कामाची माहिती..." class="w-full p-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-emerald-500"></textarea>
+        </div>
+
+        <button type="submit" class="w-full py-3 rounded-xl font-bold text-sm bg-emerald-700 hover:bg-emerald-800 text-white transition shadow">
+          <i class="fas fa-plus-circle mr-1.5"></i> नोंद जतन करा
+        </button>
+      </form>
+    </div>
+
+    <!-- Download Updated JSON -->
+    <div class="bg-gray-800 text-white rounded-3xl p-6 shadow flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div>
+        <h3 class="text-base font-bold devanagari-bold">सुधारित डेटा फाईल डाउनलोड करा (Export JSON)</h3>
+        <p class="text-xs text-gray-300 mt-0.5">
+          डाउनलोड केलेली <code class="text-emerald-400">tungi_expenditure_data.json</code> फाईल तुमच्या <code class="text-emerald-400">data/</code> फोल्डरमध्ये रिप्लेस करा व GitHub वर पुश करा.
+        </p>
+      </div>
+      <button 
+        onclick="downloadCurrentData()" 
+        class="px-5 py-2.5 rounded-xl text-xs font-bold bg-emerald-500 hover:bg-emerald-600 text-gray-950 transition whitespace-nowrap shadow">
+        <i class="fas fa-download mr-1.5"></i> डेटा JSON डाउनलोड करा
+      </button>
+    </div>
+  </div>
+
+  <script src="data/embedded_data.js"></script>
+  <script src="js/data.js"></script>
+  <script>
+    let localData = null;
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      localData = await DataService.init();
+    });
+
+    // Handle Drop Zone Drag & Drop
+    const dropZone = document.getElementById('drop-zone');
+    ['dragenter', 'dragover'].forEach(name => {
+      dropZone.addEventListener(name, (e) => {
+        e.preventDefault();
+        dropZone.classList.add('border-emerald-600', 'bg-emerald-50');
+      });
+    });
+    ['dragleave', 'drop'].forEach(name => {
+      dropZone.addEventListener(name, (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('border-emerald-600', 'bg-emerald-50');
+      });
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+      const files = e.dataTransfer.files;
+      if (files.length > 0) processFile(files[0]);
+    });
+
+    function handleFileSelect(e) {
+      if (e.target.files.length > 0) {
+        processFile(e.target.files[0]);
+      }
+    }
+
+    function processFile(file) {
+      const ext = file.name.split('.').pop().toLowerCase();
+      const reader = new FileReader();
+
+      if (ext === 'json') {
+        reader.onload = (ev) => {
+          try {
+            localData = JSON.parse(ev.target.result);
+            localStorage.setItem('tungi_cached_data', JSON.stringify(localData));
+            alert('JSON डेटा यशस्वीरित्या लोड झाला!');
+          } catch(err) {
+            alert('अवैध JSON फाईल.');
+          }
+        };
+        reader.readAsText(file);
+      } else if (ext === 'xlsx' || ext === 'xls' || ext === 'csv') {
+        reader.onload = (ev) => {
+          try {
+            const data = new Uint8Array(ev.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+            const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+            const jsonRows = XLSX.utils.sheet_to_json(firstSheet);
+            console.log('Parsed rows:', jsonRows);
+            alert(`एक्सेलवरून ${jsonRows.length} नोंदी वाचण्यात आल्या!`);
+          } catch(err) {
+            alert('एक्सेल वाचताना त्रुटी आली: ' + err.message);
+          }
+        };
+        reader.readAsArrayBuffer(file);
+      }
+    }
+
+    function handleManualAdd(e) {
+      e.preventDefault();
+      const newWork = {
+        id: 'work_' + (Date.now()),
+        voucherNo: document.getElementById('w-voucherno').value.trim(),
+        expVid: Math.floor(100000 + Math.random() * 900000).toString(),
+        date: document.getElementById('w-date').value,
+        finYear: "2025-2026",
+        categoryKey: document.getElementById('w-category').value,
+        title: document.getElementById('w-title').value.trim(),
+        location: document.getElementById('w-location').value.trim(),
+        scheme: "XV Finance Commission (१५ वा वित्त आयोग)",
+        amount: parseFloat(document.getElementById('w-amount').value) || 0,
+        amountWords: document.getElementById('w-amount').value + " रुपये",
+        status: "पूर्ण (Completed)",
+        attachedBill: document.getElementById('w-bill').value.trim() || "BILL.pdf",
+        evidenceScreenshot: document.getElementById('w-photo').value.trim() || "assets/photos/image1.png",
+        photoGallery: [document.getElementById('w-photo').value.trim() || "assets/photos/image1.png"],
+        officialUrl: "https://egramswaraj.gov.in/dashBoardNew.do?entityType=V",
+        payees: [
+          {
+            name: document.getElementById('w-payee').value.trim(),
+            amount: parseFloat(document.getElementById('w-amount').value) || 0,
+            account: document.getElementById('w-account').value.trim(),
+            mode: "PFMS"
+          }
+        ],
+        marathiDescription: document.getElementById('w-desc').value.trim() || "तुंगी बु. विकासकाम पूर्ण झाले."
+      };
+
+      if (!localData) localData = { works: [], beneficiaries: [], summary: {} };
+      localData.works.unshift(newWork);
+      alert('कामाची नोंद जोडण्यात आली! कृपया खालील बटनावर क्लिक करून अपडेटेड JSON डाउनलोड करा.');
+      e.target.reset();
+    }
+
+    function downloadCurrentData() {
+      if (!localData) {
+        alert('डेटा उपलब्ध नाही.');
+        return;
+      }
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(localData, null, 2));
+      const dlAnchor = document.createElement('a');
+      dlAnchor.setAttribute("href", dataStr);
+      dlAnchor.setAttribute("download", "tungi_expenditure_data.json");
+      document.body.appendChild(dlAnchor);
+      dlAnchor.click();
+      dlAnchor.remove();
+    }
+  </script>
+</body>
+</html>

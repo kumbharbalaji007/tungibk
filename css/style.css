@@ -1,0 +1,82 @@
+/* Google Fonts & Custom WhatsApp-Inspired Styling for Tungi BK Dashboard */
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+:root {
+  --wa-teal: #075e54;
+  --wa-green: #128c7e;
+  --wa-light-green: #25d366;
+  --wa-bg: #ece5dd;
+  --wa-bubble-in: #ffffff;
+  --wa-bubble-out: #dcf8c6;
+  --gold-accent: #f59e0b;
+}
+
+body {
+  font-family: 'Baloo 2', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: #f0f2f5;
+  color: #1f2937;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Devanagari typography boost */
+.devanagari-bold {
+  font-family: 'Baloo 2', 'Noto Sans Devanagari', sans-serif;
+  font-weight: 700;
+}
+
+/* Card hover animation */
+.whatsapp-card {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.whatsapp-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.09);
+}
+
+/* Currency badge styling */
+.badge-rupee {
+  background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+  color: white;
+  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.25);
+}
+
+/* Audio pulse animation */
+@keyframes pulse-ring {
+  0% { transform: scale(0.95); opacity: 0.8; }
+  50% { transform: scale(1.05); opacity: 1; }
+  100% { transform: scale(0.95); opacity: 0.8; }
+}
+
+.speaking-active {
+  animation: pulse-ring 1.5s infinite ease-in-out;
+  border-color: #10b981 !important;
+  background-color: #ecfdf5 !important;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Modal animation */
+.modal-enter {
+  animation: modalFadeIn 0.2s ease-out forwards;
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: scale(0.95) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}

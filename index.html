@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="mr" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ग्रामपंचायत तुंगी बुद्रुक - सार्वजनिक पारदर्शकता पोर्टल | Tungi BK Transparency</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              600: '#059669',
+              700: '#047857',
+              800: '#065f46',
+              900: '#064e3b',
+            },
+            wa: {
+              teal: '#075E54',
+              green: '#128C7E',
+              light: '#25D366'
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-slate-100 text-slate-800 antialiased min-h-screen flex flex-col justify-between">
+
+  <!-- ================= TOP HEADER (WhatsApp/Govt Style) ================= -->
+  <header class="bg-gradient-to-r from-emerald-800 via-teal-900 to-emerald-900 text-white shadow-md sticky top-0 z-40">
+    <div class="max-w-5xl mx-auto px-4 py-3 sm:py-4">
+      <div class="flex items-center justify-between gap-3">
+        <!-- Village Brand & Emblem -->
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-2xl bg-white text-emerald-800 flex items-center justify-center font-black text-2xl shadow-sm border border-emerald-300">
+            तु
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h1 class="text-xl sm:text-2xl font-black tracking-tight devanagari-bold leading-tight">
+                ग्रामपंचायत तुंगी बुद्रुक
+              </h1>
+              <span class="hidden sm:inline-block px-2 py-0.5 text-[11px] font-bold bg-amber-400 text-amber-950 rounded-full">
+                LGD: १७९४१४
+              </span>
+            </div>
+            <p class="text-xs text-emerald-100 opacity-90 mt-0.5">
+              ता. औसा, जि. लातूर | आपले गाव • आपला हिशोब • खरी पारदर्शकता
+            </p>
+          </div>
+        </div>
+
+        <!-- Right Quick Actions -->
+        <div class="flex items-center gap-2">
+          <a 
+            href="admin.html" 
+            class="hidden md:inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-700/60 hover:bg-emerald-700 text-white border border-emerald-500/40 transition">
+            <i class="fas fa-file-excel mr-1.5 text-emerald-300"></i> डेटा व्यवस्थापक
+          </a>
+          <button 
+            onclick="document.getElementById('disclaimer-section').scrollIntoView({ behavior: 'smooth' })"
+            class="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-600 text-amber-950 shadow-sm transition">
+            <i class="fas fa-exclamation-triangle mr-1.5"></i>
+            <span>अस्वीकरण</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs Bar -->
+    <div class="bg-emerald-950 border-t border-emerald-800">
+      <div class="max-w-5xl mx-auto px-2 sm:px-4 flex items-center justify-between sm:justify-start gap-1 sm:gap-2 overflow-x-auto py-1">
+        <button 
+          id="btn-tab-works"
+          onclick="switchTab('tab-works')"
+          class="nav-tab-btn px-3 sm:px-4 py-2.5 text-xs sm:text-sm font-black border-b-4 border-amber-400 text-white bg-emerald-900/80 rounded-t-xl flex items-center gap-2 whitespace-nowrap transition">
+          <i class="fas fa-stream text-amber-300"></i>
+          <span>कामांची यादी (Feed)</span>
+        </button>
+
+        <button 
+          id="btn-tab-beneficiaries"
+          onclick="switchTab('tab-beneficiaries')"
+          class="nav-tab-btn px-3 sm:px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-4 border-transparent text-emerald-200/90 hover:text-white hover:bg-emerald-900/50 rounded-t-xl flex items-center gap-2 whitespace-nowrap transition">
+          <i class="fas fa-users text-teal-300"></i>
+          <span>कोणाला किती मिळाले? (हिशोब)</span>
+        </button>
+
+        <button 
+          id="btn-tab-proofs"
+          onclick="switchTab('tab-proofs')"
+          class="nav-tab-btn px-3 sm:px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-4 border-transparent text-emerald-200/90 hover:text-white hover:bg-emerald-900/50 rounded-t-xl flex items-center gap-2 whitespace-nowrap transition">
+          <i class="fas fa-file-shield text-blue-300"></i>
+          <span>सरकारी व्हाउचर्स व पुरावे</span>
+        </button>
+
+        <button 
+          id="btn-tab-gramsabha"
+          onclick="switchTab('tab-gramsabha')"
+          class="nav-tab-btn px-3 sm:px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-4 border-transparent text-emerald-200/90 hover:text-white hover:bg-emerald-900/50 rounded-t-xl flex items-center gap-2 whitespace-nowrap transition">
+          <i class="fas fa-hand-holding-heart text-amber-300"></i>
+          <span>ग्रामसभा व उपस्थिती</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= MAIN CONTAINER ================= -->
+  <main class="max-w-5xl mx-auto px-3 sm:px-4 py-4 sm:py-6 flex-1 w-full">
+
+    <!-- PROMINENT MARATHI DISCLAIMER NOTICE BOX -->
+    <div id="disclaimer-section" class="bg-amber-50 border-l-4 border-amber-500 rounded-2xl p-4 sm:p-5 mb-5 shadow-sm text-amber-950">
+      <div class="flex items-start gap-3">
+        <div class="text-xl sm:text-2xl text-amber-600 mt-0.5">
+          <i class="fas fa-info-circle"></i>
+        </div>
+        <div class="flex-1 text-xs leading-relaxed">
+          <h2 class="font-bold text-sm text-amber-900 mb-1 devanagari-bold">
+            महत्त्वाचे जाहीर प्रकटन व अस्वीकरण (Disclaimer)
+          </h2>
+          <p class="mb-1.5">
+            <strong>१. माहितीचा अधिकृत स्रोत:</strong> या संकेतस्थळावर दर्शविण्यात आलेली सर्व आकडेवारी, व्हाउचर्स, लाभार्थी नावे व खर्चाचा हिशोब हा भारत सरकारच्या अधिकृत व सार्वजनिकरीत्या उपलब्ध असणाऱ्या 
+            <a href="https://egramswaraj.gov.in" target="_blank" class="underline font-bold text-amber-900 hover:text-black">eGramSwaraj (https://egramswaraj.gov.in)</a> 
+            या शासकीय पोर्टलवरून संकलित करण्यात आलेला आहे.
+          </p>
+          <p class="mb-1.5">
+            <strong>२. जबाबदारीसंबंधी स्पष्टीकरण:</strong> मूळ शासकीय संकेतस्थळावर जर नंतर काही बदल, फेरबदल किंवा त्रुटी आढळल्यास, त्याबाबत या संकेतस्थळाचे मालक, ॲडमिन अथवा डेव्हलपर कोणतीही कायदेशीर किंवा व्यक्तिगत जबाबदारी स्वीकारत नाहीत.
+          </p>
+          <p>
+            <strong>३. आमचा प्रामाणिक उद्देश:</strong> या उपक्रमाचा मूळ उद्देश ग्रामपंचायत तुंगी बु. (Tungi BK) मधील सर्वसामान्य व अल्पशिक्षित नागरिकांना गावाचा हिशोब आणि निधीचा वापर एकाच ठिकाणी, सहज व पारदर्शक चित्रांसह समजावा हाच आहे.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= SUMMARY COUNTER CARDS ================= -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-4">
+      <!-- Total Expenditure Card -->
+      <div class="col-span-2 sm:col-span-1 bg-white rounded-2xl p-4 border border-emerald-100 shadow-sm flex flex-col justify-between">
+        <div class="text-xs text-gray-500 font-semibold mb-1 flex items-center justify-between">
+          <span>एकूण झालेला खर्च</span>
+          <i class="fas fa-wallet text-emerald-600"></i>
+        </div>
+        <div id="total-expenditure-marathi" class="text-2xl font-black text-emerald-800 devanagari-bold">
+          ₹ ०
+        </div>
+        <div id="total-expenditure-words" class="text-[11px] text-gray-500 mt-1 leading-tight line-clamp-1">
+          लोड होत आहे...
+        </div>
+      </div>
+
+      <!-- Total Works Card -->
+      <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm flex flex-col justify-between">
+        <div class="text-xs text-gray-500 font-semibold mb-1 flex items-center justify-between">
+          <span>नोंद झालेली कामे</span>
+          <i class="fas fa-hard-hat text-amber-500"></i>
+        </div>
+        <div id="total-works-count" class="text-xl sm:text-2xl font-black text-gray-900 devanagari-bold">
+          ०
+        </div>
+        <div class="text-[11px] text-emerald-600 font-semibold mt-1">
+          सर्व कामे मंजूर व अदा
+        </div>
+      </div>
+
+      <!-- Beneficiaries / Payees Count -->
+      <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm flex flex-col justify-between">
+        <div class="text-xs text-gray-500 font-semibold mb-1 flex items-center justify-between">
+          <span>निधी मिळालेले खातेदार</span>
+          <i class="fas fa-user-tag text-teal-600"></i>
+        </div>
+        <div id="total-beneficiaries-count" class="text-xl sm:text-2xl font-black text-gray-900 devanagari-bold">
+          ०
+        </div>
+        <div class="text-[11px] text-gray-500 mt-1">
+          कंत्राटदार / संस्था
+        </div>
+      </div>
+
+      <!-- Financial Year Card -->
+      <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm flex flex-col justify-between">
+        <div class="text-xs text-gray-500 font-semibold mb-1 flex items-center justify-between">
+          <span>आर्थिक वर्ष व योजना</span>
+          <i class="fas fa-landmark text-blue-600"></i>
+        </div>
+        <div id="current-fin-year" class="text-lg sm:text-xl font-black text-blue-900">
+          2025-2026
+        </div>
+        <div class="text-[11px] text-gray-500 mt-1">
+          १५ वा वित्त आयोग (XVFC)
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= SARPANCH & OFFICIAL VILLAGE STATS BAR ================= -->
+    <div class="bg-gradient-to-r from-emerald-900 to-teal-950 text-white rounded-2xl p-4 sm:p-5 mb-6 shadow-md border border-emerald-700/50 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-3.5">
+        <div class="w-12 h-12 rounded-full bg-emerald-800 border-2 border-emerald-400 flex items-center justify-center text-xl font-black shadow-inner">
+          <i class="fas fa-user-tie text-emerald-300"></i>
+        </div>
+        <div>
+          <div class="text-[11px] uppercase tracking-wider text-emerald-300 font-bold">सरपंच / ग्रामपंचायत प्रमुख</div>
+          <div class="text-base font-extrabold text-white devanagari-bold">श्री. मोहन विष्णू कावळे (Mohan Vishnu Kavale)</div>
+          <div class="text-xs text-emerald-200 opacity-90">शिक्षण: पदवीधर (Graduate) | संपर्क: gptungibu@gmail.com</div>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-4 bg-emerald-800/60 py-2 px-4 rounded-xl border border-emerald-600/40 text-center">
+        <div>
+          <div class="text-xs text-emerald-300 font-semibold">गावातील मंजूर कामे</div>
+          <div class="text-xl font-black text-amber-400 devanagari-bold">३०५ कामे</div>
+        </div>
+        <div class="w-px h-8 bg-emerald-700"></div>
+        <div>
+          <div class="text-xs text-emerald-300 font-semibold">प्रत्यक्ष चालू कामे</div>
+          <div class="text-xl font-black text-emerald-400 devanagari-bold">१४ कामे</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= TAB 1: WORKS FEED ================= -->
+    <section id="tab-works" class="tab-content">
+      <!-- Search & Category Filters Bar -->
+      <div class="bg-white rounded-2xl p-3 sm:p-4 border border-gray-200 shadow-sm mb-5">
+        <div class="flex flex-col sm:flex-row items-center gap-3">
+          <!-- Search input -->
+          <div class="relative w-full sm:flex-1">
+            <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+              <i class="fas fa-search"></i>
+            </span>
+            <input 
+              type="text" 
+              id="search-input" 
+              placeholder="कामाचे नाव, जागा, कंत्राटदार किंवा व्हाउचर शोधा..." 
+              class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-gray-200 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-gray-50 focus:bg-white transition" />
+          </div>
+
+          <!-- Category filter pills -->
+          <div class="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0">
+            <button 
+              onclick="filterCategory('all', this)" 
+              class="cat-pill px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition bg-emerald-700 text-white shadow-sm">
+              सर्व कामे
+            </button>
+            <button 
+              onclick="filterCategory('roads', this)" 
+              class="cat-pill px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition bg-white text-gray-700 border border-gray-200 hover:bg-gray-50">
+              🛣️ रस्ते
+            </button>
+            <button 
+              onclick="filterCategory('water', this)" 
+              class="cat-pill px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition bg-white text-gray-700 border border-gray-200 hover:bg-gray-50">
+              💧 पाणी
+            </button>
+            <button 
+              onclick="filterCategory('sanitation', this)" 
+              class="cat-pill px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition bg-white text-gray-700 border border-gray-200 hover:bg-gray-50">
+              🚰 नाली व स्वच्छता
+            </button>
+            <button 
+              onclick="filterCategory('maintenance', this)" 
+              class="cat-pill px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition bg-white text-gray-700 border border-gray-200 hover:bg-gray-50">
+              🛠️ दुरुस्ती
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Works Cards Grid -->
+      <div id="works-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+        <!-- Injected via JavaScript -->
+        <div class="col-span-full py-16 text-center text-gray-400">
+          <i class="fas fa-spinner fa-spin text-3xl mb-2 text-emerald-600"></i>
+          <p class="text-xs">माहिती लोड होत आहे...</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TAB 2: BENEFICIARIES TRANSPARENCY LEDGER ================= -->
+    <section id="tab-beneficiaries" class="tab-content hidden">
+      <div class="bg-white rounded-2xl p-4 sm:p-5 border border-gray-200 shadow-sm mb-5">
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <h2 class="text-lg font-bold text-gray-900 devanagari-bold">
+              कोणाला किती पैसे मिळाले? (Vendor Payout Transparency Ledger)
+            </h2>
+            <p class="text-xs text-gray-500 mt-0.5">
+              ग्रामपंचायत तुंगी बुद्रुकच्या बँक खात्यातून कोणत्या व्यक्ती अथवा एजन्सीला वर्षभरात किती रक्कम अदा करण्यात आली याचा सविस्तर तपशील.
+            </p>
+          </div>
+          <span class="px-2.5 py-1 text-xs font-bold rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 whitespace-nowrap">
+            PFMS बँक रेकॉर्ड
+          </span>
+        </div>
+      </div>
+
+      <!-- Beneficiaries Grid -->
+      <div id="beneficiaries-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+        <!-- Injected via JavaScript -->
+      </div>
+    </section>
+
+    <!-- ================= TAB 3: PROOFS & VOUCHERS TABLE ================= -->
+    <section id="tab-proofs" class="tab-content hidden">
+      <div class="bg-white rounded-2xl p-4 sm:p-5 border border-gray-200 shadow-sm mb-5">
+        <h2 class="text-lg font-bold text-gray-900 devanagari-bold">
+          शासकीय व्हाउचर व प्रत्यक्ष पुरावे (Audit & Vouchers)
+        </h2>
+        <p class="text-xs text-gray-500 mt-0.5">
+          सत्यतेच्या खात्रीसाठी प्रत्येक व्हाउचरच्या समोर थेट eGramSwaraj पोर्टलची लिंक व जोडलेल्या बिलांची नावे दिलेली आहेत.
+        </p>
+      </div>
+
+      <!-- Vouchers Table -->
+      <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-gray-50 text-[11px] font-bold text-gray-500 uppercase tracking-wider border-b border-gray-200">
+                <th class="px-4 py-3">व्हाउचर क्र.</th>
+                <th class="px-4 py-3">तारीख</th>
+                <th class="px-4 py-3">कामाचे नाव</th>
+                <th class="px-4 py-3">रक्कम (₹)</th>
+                <th class="px-4 py-3">लाभार्थी / संस्था</th>
+                <th class="px-4 py-3">जोडलेले बिल PDF</th>
+                <th class="px-4 py-3 text-right">थेट पडताळणी</th>
+              </tr>
+            </thead>
+            <tbody id="proofs-table-body">
+              <!-- Injected via JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TAB 4: GRAM SABHA & ATTENDANCE ================= -->
+    <section id="tab-gramsabha" class="tab-content hidden">
+      <!-- Portal Header Banner -->
+      <div class="bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 text-white rounded-2xl p-5 shadow-sm mb-5">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider bg-black/25 px-2.5 py-1 rounded-lg inline-flex items-center gap-1.5">
+              <i class="fas fa-landmark text-amber-300"></i>
+              Meeting Online Portal (भारत सरकार - Vibrant Gram Sabha)
+            </span>
+            <h2 class="text-xl sm:text-2xl font-black mt-2 devanagari-bold">
+              ग्रामसभा पारदर्शकता, ठराव व उपस्थिती पडताळणी
+            </h2>
+            <p class="text-xs text-amber-100 opacity-95 mt-0.5">
+              ग्रामसभेत घेतलेले ठराव, अधिकृत शासकीय नोंदणी आणि ग्रामस्थांची कागदावरील खरी उपस्थिती येथे तपासा.
+            </p>
+          </div>
+          <a 
+            href="https://meetingonline.gov.in/dashboard/panchayat-dashboard" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            class="inline-flex items-center px-4 py-2.5 rounded-xl text-xs font-bold bg-white text-orange-950 hover:bg-amber-50 shadow-md transition whitespace-nowrap">
+            <i class="fas fa-external-link-alt mr-1.5 text-amber-600"></i>
+            <span>मूळ सरकारी पोर्टल पहा</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Warning Box on Fake Attendance / Discrepancy -->
+      <div class="bg-red-50 border-l-4 border-red-500 rounded-2xl p-4 sm:p-5 mb-6 text-xs text-red-900 leading-relaxed shadow-sm">
+        <div class="font-bold text-sm text-red-800 mb-1.5 flex items-center gap-2">
+          <i class="fas fa-exclamation-triangle text-red-600 text-base"></i>
+          <span>नागरिकांसाठी महत्त्वाची सूचना (उपस्थिती व ठराव पडताळणी):</span>
+        </div>
+        <p class="mb-1.5">
+          शासनाच्या <strong>Meeting Online पोर्टलवर (meetingonline.gov.in)</strong> तुंगी बु. ग्रामसभेची नोटीस, इतिवृत्त, ठराव आणि कागदावरील स्वाक्षऱ्यांचे फोटो अधिकृतपणे अपलोड केले जातात.
+        </p>
+        <p>
+          जर तुम्ही प्रत्यक्ष या सभेला <strong>उपस्थित नव्हता आणि तरीही तुमचे नाव अथवा स्वाक्षरी / अंगठा नोंदवला गेला असेल</strong>, किंवा ठरावामध्ये काही खोटी माहिती वाटल्यास, ग्रामस्थांनी ग्रामसभेत अथवा थेट <strong>गटविकास अधिकारी (BDO), पंचायत समिती औसा</strong> यांच्याकडे लेखी आक्षेप नोंदवावा.
+        </p>
+      </div>
+
+      <!-- ================= 1. SCHEDULED GRAM SABHA MEETINGS ================= -->
+      <div class="bg-white rounded-3xl border border-gray-200 p-4 sm:p-6 shadow-sm mb-6">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-gray-100 pb-4 mb-4">
+          <div>
+            <span class="text-xs font-bold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200 inline-flex items-center gap-1">
+              <i class="fas fa-check-circle text-emerald-600"></i>
+              शासकीय नोंदणीकृत सभा
+            </span>
+            <h3 class="text-lg font-black text-gray-900 mt-1 devanagari-bold">
+              Scheduled Gram Sabha Meetings (नियोजित व संपन्न ग्रामसभा)
+            </h3>
+            <p class="text-xs text-gray-500 mt-0.5">
+              ग्रामपंचायत तुंगी बुद्रुक (Tungi Bu) करिता केंद्र सरकारच्या Meeting Online पोर्टलवर नोंद असलेल्या सभा
+            </p>
+          </div>
+          <span class="text-xs font-bold text-blue-800 bg-blue-50 px-3 py-1.5 rounded-xl border border-blue-200 whitespace-nowrap">
+            ३ ग्रामसभा नोंदणीकृत
+          </span>
+        </div>
+
+        <!-- Scheduled Meetings Table -->
+        <div class="overflow-x-auto rounded-2xl border border-gray-200 shadow-inner">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-slate-100 text-[11px] font-bold text-slate-600 uppercase tracking-wider border-b border-gray-200">
+                <th class="px-4 py-3 whitespace-nowrap">नोंदणी तारीख<br><span class="text-[10px] text-gray-400 font-normal">REGISTERED ON</span></th>
+                <th class="px-4 py-3 whitespace-nowrap">ग्रामपंचायत<br><span class="text-[10px] text-gray-400 font-normal">PANCHAYAT</span></th>
+                <th class="px-4 py-3 whitespace-nowrap">सभेचा प्रकार<br><span class="text-[10px] text-gray-400 font-normal">MEETING TYPE</span></th>
+                <th class="px-4 py-3 min-w-[200px]">सभेचा मुख्य उद्देश<br><span class="text-[10px] text-gray-400 font-normal">MEETING PURPOSE</span></th>
+                <th class="px-4 py-3 whitespace-nowrap">सभेची तारीख व वेळ<br><span class="text-[10px] text-gray-400 font-normal">MEETING DATE</span></th>
+                <th class="px-4 py-3">सभेचे ठिकाण<br><span class="text-[10px] text-gray-400 font-normal">MEETING VENUE</span></th>
+                <th class="px-4 py-3 text-center whitespace-nowrap">स्थिती<br><span class="text-[10px] text-gray-400 font-normal">STATUS</span></th>
+              </tr>
+            </thead>
+            <tbody id="scheduled-meetings-body">
+              <!-- Dynamically populated via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ================= 2. PAPER SCANS & ORIGINAL NOTICE GALLERY ================= -->
+      <div class="bg-white rounded-3xl border border-gray-200 p-4 sm:p-6 shadow-sm mb-6">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-gray-100 pb-4 mb-4">
+          <div>
+            <span class="text-xs font-bold text-amber-800 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-200 inline-flex items-center gap-1">
+              <i class="fas fa-camera text-amber-600"></i>
+              प्रत्यक्ष पुरावा फोटो
+            </span>
+            <h3 class="text-lg font-black text-gray-900 mt-1 devanagari-bold">
+              कागदावरील मूळ सह्या, नोटीस व इतिवृत्त स्कॅन (Paper Scans Gallery)
+            </h3>
+            <p class="text-xs text-gray-500 mt-0.5">
+              ग्रामसभेत प्रत्यक्ष भरलेले हजेरी रजिस्टर, स्वाक्षऱ्या आणि नोटीसचे फोटो. मोठा फोटो पाहण्यासाठी कार्डवर क्लिक करा.
+            </p>
+          </div>
+          <span class="text-xs font-bold text-purple-800 bg-purple-50 px-3 py-1.5 rounded-xl border border-purple-200 whitespace-nowrap">
+            ७ कागदपत्रे उपलब्ध
+          </span>
+        </div>
+
+        <!-- Scans Grid -->
+        <div id="paper-scans-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- Dynamically populated via JS -->
+        </div>
+      </div>
+
+      <!-- ================= 3. TOPICS & RESOLUTIONS ================= -->
+      <div class="bg-white rounded-3xl border border-gray-200 p-4 sm:p-6 shadow-sm mb-6">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-gray-100 pb-4 mb-4">
+          <div>
+            <span class="text-xs font-bold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200 inline-flex items-center gap-1">
+              <i class="fas fa-file-contract text-emerald-600"></i>
+              सभेचे निर्णय
+            </span>
+            <h3 class="text-lg font-black text-gray-900 mt-1 devanagari-bold">
+              ग्रामसभेत मंजूर झालेले ठराव व विषय (Resolutions & Decisions)
+            </h3>
+            <p class="text-xs text-gray-500 mt-0.5">
+              २ ऑक्टोबरच्या ग्रामसभेत गावपातळीवर घेतलेले सर्व महत्त्वाचे निर्णय व खर्चाला दिलेली मंजुरी
+            </p>
+          </div>
+          <span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-200 whitespace-nowrap">
+            ५ ठराव मंजूर
+          </span>
+        </div>
+
+        <div id="resolutions-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Dynamically populated via JS -->
+        </div>
+      </div>
+
+      <!-- ================= 4. DIGITAL ATTENDEES TABLE WITH LIVE SEARCH ================= -->
+      <div class="bg-white rounded-3xl border border-gray-200 p-4 sm:p-6 shadow-sm mb-6">
+        <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-gray-100 pb-4 mb-4">
+          <div>
+            <span class="text-xs font-bold text-blue-800 bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-200 inline-flex items-center gap-1">
+              <i class="fas fa-users-cog text-blue-600"></i>
+              हजेरी पडताळणी
+            </span>
+            <h3 class="text-lg font-black text-gray-900 mt-1 devanagari-bold">
+              ग्रामसभा डिजिटल उपस्थिती यादी (Attendees Digital Table)
+            </h3>
+            <p class="text-xs text-gray-500 mt-0.5">
+              हस्तलिखित रजिस्टरमधील फोटो अस्पष्ट असल्याने ग्रामस्थांच्या सोयीसाठी तयार केलेली डिजिटल यादी
+            </p>
+          </div>
+
+          <!-- Total Counter Badge -->
+          <div class="flex items-center gap-2">
+            <span id="attendee-total-badge" class="px-3 py-1.5 rounded-xl text-xs font-black bg-emerald-100 text-emerald-900 border border-emerald-300 shadow-sm whitespace-nowrap">
+              एकूण ११६ उपस्थिती नोंद
+            </span>
+          </div>
+        </div>
+
+        <!-- Filter Pills & Search Bar -->
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 mb-4">
+          <!-- Category Filter Buttons -->
+          <div class="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
+            <button onclick="filterAttendeeCategory('all', this)" class="att-cat-pill px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition bg-emerald-700 text-white shadow-sm">
+              सर्व (All)
+            </button>
+            <button onclick="filterAttendeeCategory('ग्रामस्थ', this)" class="att-cat-pill px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition bg-gray-100 text-gray-700 hover:bg-gray-200">
+              ग्रामस्थ
+            </button>
+            <button onclick="filterAttendeeCategory('महिला', this)" class="att-cat-pill px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition bg-gray-100 text-gray-700 hover:bg-gray-200">
+              महिला
+            </button>
+            <button onclick="filterAttendeeCategory('अधिकारी', this)" class="att-cat-pill px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition bg-gray-100 text-gray-700 hover:bg-gray-200">
+              कर्मचारी / अधिकारी
+            </button>
+          </div>
+
+          <!-- Live Search Input -->
+          <div class="relative w-full sm:w-72">
+            <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+              <i class="fas fa-search"></i>
+            </span>
+            <input 
+              type="text" 
+              id="attendee-search" 
+              placeholder="नाव, अ.क्र. किंवा प्रवर्ग शोधा..." 
+              class="w-full pl-9 pr-4 py-2 rounded-xl border border-gray-300 text-xs focus:ring-2 focus:ring-emerald-500 focus:outline-none bg-gray-50 focus:bg-white transition" />
+          </div>
+        </div>
+
+        <!-- Attendees Table -->
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-inner overflow-hidden">
+          <div class="overflow-x-auto max-h-[600px] overflow-y-auto">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead class="sticky top-0 z-10 bg-slate-100 border-b border-gray-200 shadow-sm">
+                <tr class="text-[11px] font-bold text-slate-700 uppercase tracking-wider">
+                  <th class="px-4 py-3 whitespace-nowrap">अ.क्र.</th>
+                  <th class="px-4 py-3 min-w-[200px]">उपस्थित ग्रामस्थाचे नाव</th>
+                  <th class="px-4 py-3 whitespace-nowrap">पद / प्रवर्ग</th>
+                  <th class="px-4 py-3 whitespace-nowrap">वर्गवारी</th>
+                  <th class="px-4 py-3 whitespace-nowrap">नोंदवहीतील स्वाक्षरी स्थिती</th>
+                  <th class="px-4 py-3 text-right whitespace-nowrap">कागदावरील पुरावा</th>
+                </tr>
+              </thead>
+              <tbody id="attendees-table-body">
+                <!-- Dynamically populated via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Note below table -->
+        <div class="mt-3 text-[11px] text-gray-500 flex items-center gap-2">
+          <i class="fas fa-info-circle text-amber-500"></i>
+          <span>नोंद: उपलब्ध रजिस्टर पानांवरून (पान १ ते ४) एकूण ८८ ग्रामस्थांची नावे ट्रान्सक्राइब केलेली असून, नोंदवहीतील अंतिम अनुक्रमांक ११६ आहे. 'रजिस्टर पान पहा' बटणावर क्लिक केल्यास त्या व्यक्तीच्या स्वाक्षरीचे मूळ पान स्क्रीनवर दिसेल.</span>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ================= MODALS ================= -->
+
+  <!-- 1. Voucher Detail Modal -->
+  <div id="voucher-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl modal-enter" id="voucher-modal-content">
+      <!-- Injected dynamically -->
+    </div>
+  </div>
+
+  <!-- 2. Photo Lightbox Modal -->
+  <div id="photo-modal" class="fixed inset-0 z-50 bg-black/90 flex flex-col items-center justify-center p-3 sm:p-4 hidden">
+    <button onclick="closePhotoModal()" class="absolute top-4 right-4 text-white text-3xl font-bold hover:text-gray-300">
+      &times;
+    </button>
+    <div class="max-w-4xl w-full text-center">
+      <img id="photo-modal-img" src="" alt="Proof Preview" class="max-h-[80vh] mx-auto rounded-xl shadow-2xl object-contain border border-gray-700 bg-white" />
+      <p id="photo-modal-title" class="text-white text-sm font-semibold mt-3"></p>
+    </div>
+  </div>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="bg-slate-900 text-slate-400 text-xs py-8 border-t border-slate-800 mt-8">
+    <div class="max-w-5xl mx-auto px-4">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div>
+          <h4 class="text-white font-bold text-sm mb-2 devanagari-bold">ग्रामपंचायत तुंगी बुद्रुक</h4>
+          <p class="leading-relaxed text-slate-400">
+            तालुका: औसा, जिल्हा: लातूर, राज्य: महाराष्ट्र.<br>
+            स्थानिक स्वराज्य संस्था कोड (LGD Code): <strong>179414</strong>
+          </p>
+        </div>
+
+        <div>
+          <h4 class="text-white font-bold text-sm mb-2 devanagari-bold">अधिकृत सरकारी संदर्भ</h4>
+          <ul class="space-y-1.5 text-slate-400">
+            <li>
+              <a href="https://egramswaraj.gov.in" target="_blank" class="hover:text-emerald-400 transition">
+                <i class="fas fa-external-link-alt mr-1"></i> eGramSwaraj Portal (Panchayati Raj)
+              </a>
+            </li>
+            <li>
+              <a href="https://pfms.nic.in" target="_blank" class="hover:text-emerald-400 transition">
+                <i class="fas fa-external-link-alt mr-1"></i> Public Financial Management System (PFMS)
+              </a>
+            </li>
+            <li>
+              <a href="https://mahasampark.maharashtra.gov.in" target="_blank" class="hover:text-emerald-400 transition">
+                <i class="fas fa-external-link-alt mr-1"></i> महाराष्ट्र शासन - ग्रामविकास विभाग
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="text-white font-bold text-sm mb-2 devanagari-bold">जाहीर अस्वीकरण (Legal Note)</h4>
+          <p class="text-[11px] leading-relaxed text-slate-500">
+            हे संकेतस्थळ संपूर्णतः जनहित व पारदर्शकतेसाठी तयार केले असून, माहितीचा स्रोत भारत सरकारचे eGramSwaraj पोर्टल आहे. कोणत्याही विसंगतीसाठी मूळ शासकीय संकेतस्थळ ग्राह्य मानावे.
+          </p>
+        </div>
+      </div>
+
+      <div class="border-t border-slate-800 pt-4 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-500 gap-2">
+        <p>© 2026 तुंगी बु. ग्रामस्थ पारदर्शकता उपक्रम | आपले गाव, आपला हिशोब</p>
+        <p>GitHub Pages वर मोफत व सुरक्षितपणे प्रकाशित</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Data Sources & Embedded Dataset -->
+  <script src="data/embedded_data.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
