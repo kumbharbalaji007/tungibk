@@ -80,3 +80,13 @@ body {
   from { opacity: 0; transform: scale(0.95) translateY(10px); }
   to { opacity: 1; transform: scale(1) translateY(0); }
 }
+
+/* Warning Modal Animated Icon */
+@keyframes warningPulse {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.5)); }
+  50% { transform: scale(1.06); filter: drop-shadow(0 0 22px rgba(239, 68, 68, 0.7)); }
+}
+
+.warning-icon-pulse {
+  animation: warningPulse 1.6s infinite ease-in-out;
+}

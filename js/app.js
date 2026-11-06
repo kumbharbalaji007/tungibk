@@ -4,6 +4,7 @@
 
 document.addEventListener('DOMContentLoaded', async () => {
   try {
+    initSpeechVoices();
     await DataService.init();
     renderSummary();
     renderWorks();
@@ -12,6 +13,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderGramSabhaSection();
     setupEventListeners();
     checkDisclaimerOnLoad();
+    handleDeepLinkOnLoad();
   } catch (e) {
     console.error('Initialization error:', e);
     showToast('माहिती लोड करण्यात त्रुटी आली. कृपया पुन्हा लोड करा.', 'error');
@@ -136,34 +138,44 @@ function renderWorks() {
         </div>
 
         <!-- Action Bar (Footer of Card) -->
-        <div class="bg-gray-50 border-t border-gray-100 px-4 py-3 flex items-center justify-between gap-2">
+        <div class="bg-gray-50 border-t border-gray-100 px-3 sm:px-4 py-2.5 flex items-center justify-between gap-1.5 sm:gap-2">
           <!-- Voice Button -->
           <button 
             type="button" 
             onclick="speakWork('${work.id}')"
-            class="audio-btn-${work.id} inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-gray-700 border border-gray-300 hover:bg-gray-100 hover:text-emerald-700 transition"
+            class="audio-btn-${work.id} inline-flex items-center px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-gray-700 border border-gray-300 hover:bg-gray-100 hover:text-emerald-700 transition"
             title="मराठीत ऐका">
-            <i class="fas fa-volume-up text-emerald-600 mr-1.5 text-sm"></i>
+            <i class="fas fa-volume-up text-emerald-600 mr-1 sm:mr-1.5 text-sm"></i>
             <span>ऐका</span>
           </button>
 
-          <!-- WhatsApp Share Button -->
+          <!-- WhatsApp Share Button with Deep Link -->
           <button 
             type="button"
             onclick="shareOnWhatsApp('${work.id}')"
-            class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-bold bg-[#25D366] text-white hover:bg-[#20ba59] shadow-sm transition"
-            title="व्हॉट्सॲपवर पाठवा">
-            <i class="fab fa-whatsapp text-sm mr-1.5"></i>
+            class="inline-flex items-center px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold bg-[#25D366] text-white hover:bg-[#20ba59] shadow-sm transition"
+            title="व्हॉट्सॲपवर पाठवा (Direct Link सह)">
+            <i class="fab fa-whatsapp text-sm mr-1 sm:mr-1.5"></i>
             <span>शेअर</span>
+          </button>
+
+          <!-- Copy Deep Link Button -->
+          <button 
+            type="button"
+            onclick="copyWorkLink('${work.id}')"
+            class="inline-flex items-center px-2 sm:px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-white text-gray-700 border border-gray-300 hover:bg-gray-100 hover:text-emerald-700 transition"
+            title="या कामाची थेट लिंक कॉपी करा">
+            <i class="fas fa-link text-gray-400 mr-1 text-xs"></i>
+            <span class="hidden sm:inline">लिंक</span>
           </button>
 
           <!-- Official Proof Details Modal Button -->
           <button 
             type="button"
             onclick="openVoucherModal('${work.id}')"
-            class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-800 text-white hover:bg-emerald-900 shadow-sm transition">
-            <i class="fas fa-file-shield mr-1.5"></i>
-            <span>अस्सल पुरावा</span>
+            class="inline-flex items-center px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-800 text-white hover:bg-emerald-900 shadow-sm transition">
+            <i class="fas fa-file-shield mr-1 sm:mr-1.5"></i>
+            <span>पुरावा</span>
           </button>
         </div>
       </div>
@@ -561,65 +573,194 @@ window.switchTab = function(tabId) {
   }
 };
 
+// ================= SPEECH SYNTHESIS CONTROLLER =================
+let availableVoices = [];
+
+function initSpeechVoices() {
+  if ('speechSynthesis' in window) {
+    availableVoices = window.speechSynthesis.getVoices();
+    window.speechSynthesis.onvoiceschanged = () => {
+      availableVoices = window.speechSynthesis.getVoices();
+    };
+  }
+}
+
+// Clean text for speech so it NEVER says "Indian Rupee" or "comma comma"
+function cleanTextForSpeech(text) {
+  if (!text) return '';
+  return text
+    // Remove parenthetical English abbreviations or amounts like (₹८३,९०४) or (Musa Patel)
+    .replace(/\([^)]*\)/g, ' ')
+    // Replace rupee symbol or variants with Devanagari word 'रुपये'
+    .replace(/₹\s*/g, ' रुपये ')
+    .replace(/Rs\.?\s*/gi, ' रुपये ')
+    .replace(/INR\s*/gi, ' रुपये ')
+    // Strip commas, colons, semicolons, brackets, slashes that cause pauses or "comma comma"
+    .replace(/[,;:\/\\~_#*~`\-]/g, ' ')
+    // Remove english letters if any
+    .replace(/[a-zA-Z]/g, ' ')
+    // Normalize spaces
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function getBestIndicVoice() {
+  if (!availableVoices.length && 'speechSynthesis' in window) {
+    availableVoices = window.speechSynthesis.getVoices();
+  }
+  // 1. Marathi voice (mr-IN)
+  let voice = availableVoices.find(v => v.lang === 'mr-IN' || v.lang.startsWith('mr'));
+  if (voice) return { voice, lang: 'mr-IN' };
+
+  // 2. Hindi voice (hi-IN) - Devanagari script is identical, reads Marathi fluently!
+  voice = availableVoices.find(v => v.lang === 'hi-IN' || v.lang.startsWith('hi'));
+  if (voice) return { voice, lang: 'hi-IN' };
+
+  // 3. Indian English voice fallback
+  voice = availableVoices.find(v => v.lang.includes('IN') || v.name.toLowerCase().includes('india'));
+  if (voice) return { voice, lang: voice.lang };
+
+  return null;
+}
+
 // Text to Speech Audio Narration (मराठीत वाचून दाखवा)
 window.speakWork = function(workId) {
   const work = DataService.getAllWorks().find(w => w.id === workId);
   if (!work) return;
 
-  if ('speechSynthesis' in window) {
-    // If already speaking, stop
-    if (window.speechSynthesis.speaking) {
-      window.speechSynthesis.cancel();
-      document.querySelectorAll('[class^="audio-btn-"]').forEach(btn => btn.classList.remove('speaking-active'));
-      return;
-    }
-
-    const textToSpeak = `ग्रामपंचायत तुंगी बुद्रुक. कामाचे नाव: ${work.title}. जागा: ${work.location}. एकूण मंजूर व अदा रक्कम: ${work.amountWords}. लाभार्थी: ${work.payees.map(p => p.name).join(' आणि ')}. तपशील: ${work.marathiDescription}`;
-    
-    const utterance = new SpeechSynthesisUtterance(textToSpeak);
-    utterance.lang = 'mr-IN'; // Marathi language code
-    utterance.rate = 0.9; // Slightly slower for crisp clarity
-
-    const btn = document.querySelector(`.audio-btn-${workId}`);
-    if (btn) btn.classList.add('speaking-active');
-
-    utterance.onend = () => {
-      if (btn) btn.classList.remove('speaking-active');
-    };
-    utterance.onerror = () => {
-      if (btn) btn.classList.remove('speaking-active');
-    };
-
-    window.speechSynthesis.speak(utterance);
-    showToast('मराठीत ऑडिओ सुरू आहे... बंद करण्यासाठी पुन्हा दाबा', 'info');
-  } else {
+  if (!('speechSynthesis' in window)) {
     showToast('आपल्या ब्राउझरमध्ये ऑडिओ सुविधा उपलब्ध नाही.', 'error');
+    return;
   }
+
+  // If already speaking, toggle stop
+  if (window.speechSynthesis.speaking) {
+    window.speechSynthesis.cancel();
+    document.querySelectorAll('[class^="audio-btn-"]').forEach(btn => btn.classList.remove('speaking-active'));
+    showToast('ऑडिओ थांबवला आहे.', 'info');
+    return;
+  }
+
+  // Build clean, natural Marathi sentences without raw symbols, English letters or stray commas
+  const cleanTitle = cleanTextForSpeech(work.title);
+  const cleanLocation = cleanTextForSpeech(work.location);
+  const cleanDesc = cleanTextForSpeech(work.marathiDescription);
+  const cleanAmountWords = cleanTextForSpeech(work.amountWords);
+  const cleanPayees = work.payees.map(p => cleanTextForSpeech(p.name)).filter(Boolean).join(' आणि ');
+
+  const textToSpeak = `ग्रामपंचायत तुंगी बुद्रुक. कामाचे नाव. ${cleanTitle}. जागा. ${cleanLocation}. एकूण खर्च. ${cleanAmountWords}. निधी मिळालेली व्यक्ती. ${cleanPayees}. अधिक तपशील. ${cleanDesc}.`;
+
+  const utterance = new SpeechSynthesisUtterance(textToSpeak);
+  
+  const indicVoice = getBestIndicVoice();
+  if (indicVoice) {
+    utterance.voice = indicVoice.voice;
+    utterance.lang = indicVoice.lang;
+  } else {
+    utterance.lang = 'mr-IN';
+  }
+
+  utterance.rate = 0.88; // Slightly measured rate for crystal-clear rural comprehension
+  utterance.pitch = 1.0;
+
+  const btn = document.querySelector(`.audio-btn-${workId}`);
+  if (btn) btn.classList.add('speaking-active');
+
+  utterance.onend = () => {
+    if (btn) btn.classList.remove('speaking-active');
+  };
+  utterance.onerror = (e) => {
+    console.warn('Speech error:', e);
+    if (btn) btn.classList.remove('speaking-active');
+  };
+
+  window.speechSynthesis.speak(utterance);
+  showToast('मराठीत ऑडिओ सुरू आहे... थांबवण्यासाठी पुन्हा दाबा.', 'info');
 };
 
-// WhatsApp 1-Tap Share
+// ================= WHATSAPP SHARE & DEEP LINK CONTROLLER =================
+
+// Get current portal base URL (automatically works on local, GitHub Pages, or custom domain)
+function getPortalBaseUrl() {
+  if (window.location.origin && window.location.origin.startsWith('http')) {
+    return window.location.origin + window.location.pathname.replace(/\/index\.html$/i, '').replace(/\/+$/, '');
+  }
+  return 'https://kumbharbalaji007.github.io/tungibk';
+}
+
+// WhatsApp 1-Tap Share for Individual Work Card (includes Portal Deep Link + Govt Link)
 window.shareOnWhatsApp = function(workId) {
   const work = DataService.getAllWorks().find(w => w.id === workId);
   if (!work) return;
 
+  const baseUrl = getPortalBaseUrl();
+  const directLink = `${baseUrl}/?work=${work.id}`;
+
   const msg = 
-`🚩 *ग्रामपंचायत तुंगी बुद्रुक (Tungi BK) - पारदर्शकता पोर्टल* 🚩
+`🚩 *ग्रामपंचायत तुंगी बुद्रुक (Tungi BK) - पारदर्शकता हिशोब* 🚩
 ━━━━━━━━━━━━━━━━━━━━
 📌 *कामाचे नाव:* ${work.title}
 📍 *जागा:* ${work.location}
 💰 *झालेला खर्च:* ₹${work.amount.toLocaleString('en-IN')} (${work.amountWords})
 📅 *व्हाउचर तारीख:* ${work.date} (क्र. ${work.voucherNo})
-👤 *कोणाला पैसे मिळाले:* ${work.payees.map(p => p.name + ' - ₹' + p.amount.toLocaleString('en-IN')).join(', ')}
+👤 *निधी कोणाला मिळाला:* ${work.payees.map(p => p.name + ' - ₹' + p.amount.toLocaleString('en-IN')).join(', ')}
 📜 *संलग्न बिल:* ${work.attachedBill}
 
-✅ *अधिकृत सरकारी पुरावा (eGramSwaraj):*
+📱 *तुंगी बु. पोर्टलवर थेट पाहण्यासाठी लिंक:*
+👉 ${directLink}
+
+✅ *अधिकृत शासकीय पुरावा (eGramSwaraj):*
 ${work.officialUrl}
 ━━━━━━━━━━━━━━━━━━━━
-_टीप: ही माहिती केंद्र सरकारच्या ई-ग्रामस्वराज सार्वजनिक पोर्टलवरून घेतलेली आहे._`;
+_टीप: ही माहिती केंद्र सरकारच्या ई-ग्रामस्वराज पोर्टलवरून वैयक्तिक अभ्यासासाठी संकलित केलेली आहे._`;
 
   const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`;
   window.open(whatsappUrl, '_blank');
 };
+
+// Share Entire Portal on WhatsApp
+window.sharePortalOnWhatsApp = function() {
+  const baseUrl = getPortalBaseUrl();
+  const msg = 
+`🚩 *ग्रामपंचायत तुंगी बुद्रुक (Tungi BK) - पारदर्शकता पोर्टल* 🚩
+━━━━━━━━━━━━━━━━━━━━
+गावातील विकासकामांचा १५ लाख रुपयांचा हिशोब, कंत्राटदारांना मिळालेला निधी आणि २ ऑक्टोबरच्या ग्रामसभेची अधिकृत हजेरी पाहण्यासाठी खालील लिंक उघडा:
+
+👉 ${baseUrl}/
+
+✅ कामांची यादी, फोटो आणि मराठीत आवाज ऐकण्याची सोय.
+✅ ग्रामसभेतील कागदावरील सह्यांचे मूळ रजिस्टर फोटो.
+✅ शासकीय eGramSwaraj व Meeting Online पोर्टलचे थेट पुरावे.
+━━━━━━━━━━━━━━━━━━━━
+_टीप: हे पोर्टल केवळ माहिती व वैयक्तिक पारदर्शकतेसाठी आहे._`;
+
+  const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`;
+  window.open(whatsappUrl, '_blank');
+};
+
+// Copy Work Deep Link to Clipboard
+window.copyWorkLink = function(workId) {
+  const baseUrl = getPortalBaseUrl();
+  const directLink = `${baseUrl}/?work=${workId}`;
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(directLink).then(() => {
+      showToast('या कामाची थेट लिंक कॉपी झाली! आपण कोठेही शेअर करू शकता.', 'info');
+    }).catch(() => fallbackCopy(directLink));
+  } else {
+    fallbackCopy(directLink);
+  }
+};
+
+function fallbackCopy(text) {
+  const input = document.createElement('input');
+  input.value = text;
+  document.body.appendChild(input);
+  input.select();
+  document.execCommand('copy');
+  document.body.removeChild(input);
+  showToast('या कामाची थेट लिंक कॉपी झाली!', 'info');
+}
 
 // Open Voucher Detail Modal
 window.openVoucherModal = function(workId) {
@@ -713,11 +854,23 @@ window.openVoucherModal = function(workId) {
         </div>
       ` : ''}
 
-      <!-- Direct Official eGramSwaraj Link Button -->
+      <!-- Direct Links & Sharing Bar -->
       <div class="bg-gray-50 border border-gray-200 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
-        <div class="text-xs text-gray-600">
-          <i class="fas fa-shield-alt text-emerald-600 mr-1.5"></i>
-          या व्हाउचरची केंद्र सरकारच्या अधिकृत पोर्टलवर थेट पडताळणी करा.
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+          <button 
+            type="button"
+            onclick="shareOnWhatsApp('${work.id}')"
+            class="flex-1 sm:flex-initial inline-flex items-center justify-center px-4 py-2.5 rounded-xl text-xs font-bold bg-[#25D366] hover:bg-[#20ba59] text-white transition shadow">
+            <i class="fab fa-whatsapp mr-1.5 text-base"></i>
+            WhatsApp शेअर
+          </button>
+          <button 
+            type="button"
+            onclick="copyWorkLink('${work.id}')"
+            class="flex-1 sm:flex-initial inline-flex items-center justify-center px-3.5 py-2.5 rounded-xl text-xs font-bold bg-white text-gray-700 border border-gray-300 hover:bg-gray-100 transition shadow-sm">
+            <i class="fas fa-link mr-1.5 text-gray-500"></i>
+            लिंक कॉपी
+          </button>
         </div>
         <a 
           href="${work.officialUrl}" 
@@ -781,6 +934,45 @@ function checkDisclaimerOnLoad() {
     }
   } catch (e) {
     openDisclaimerModal();
+  }
+}
+
+// Handle Deep Link (?work=work_X) on Page Load
+function handleDeepLinkOnLoad() {
+  const params = new URLSearchParams(window.location.search);
+  const targetWorkId = params.get('work') || window.location.hash.replace('#', '').replace('card-', '');
+
+  if (targetWorkId) {
+    // If arriving directly via deep link, auto-acknowledge disclaimer modal so work is immediately in focus
+    try {
+      sessionStorage.setItem('tungi_disclaimer_accepted', 'true');
+    } catch (e) {}
+    const discModal = document.getElementById('disclaimer-modal');
+    if (discModal) discModal.classList.add('hidden');
+
+    switchTab('tab-works');
+
+    setTimeout(() => {
+      const card = document.getElementById(`card-${targetWorkId}`);
+      if (card) {
+        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        card.classList.add('ring-4', 'ring-amber-400', 'shadow-2xl');
+        
+        // Add animated indicator banner
+        const badge = document.createElement('div');
+        badge.id = 'deeplink-highlight-badge';
+        badge.className = 'bg-gradient-to-r from-amber-500 to-orange-500 text-white font-black text-xs py-2 px-3 text-center shadow flex items-center justify-center gap-1.5 animate-bounce rounded-t-xl';
+        badge.innerHTML = '<i class="fas fa-bullseye text-amber-200"></i> <span>आपण व्हॉट्सॲपवरून उघडलेले काम येथे आहे</span>';
+        card.prepend(badge);
+
+        showToast('आपण निवडलेले काम हायलाइट केले आहे.', 'info');
+
+        setTimeout(() => {
+          card.classList.remove('ring-4', 'ring-amber-400', 'shadow-2xl');
+          if (badge) badge.remove();
+        }, 7000);
+      }
+    }, 600);
   }
 }
 
