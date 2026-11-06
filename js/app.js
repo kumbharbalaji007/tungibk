@@ -976,6 +976,107 @@ function handleDeepLinkOnLoad() {
   }
 }
 
+// ================= CITIZEN FEEDBACK & WHISTLEBLOWER CONTROLLER =================
+
+// Trigger report from checklist
+window.triggerIssueReport = function(issueTitle) {
+  switchTab('tab-contact');
+  const catSelect = document.getElementById('feed-category');
+  const msgInput = document.getElementById('feed-message');
+
+  if (issueTitle.includes('खोटी हजेरी')) {
+    if (catSelect) catSelect.value = 'खोटी हजेरी / बनावट सही किंवा अंगठा';
+  } else if (issueTitle.includes('निकृष्ट') || issueTitle.includes('अपूर्ण')) {
+    if (catSelect) catSelect.value = 'कागदावर पूर्ण, प्रत्यक्षात अपूर्ण किंवा निकृष्ट काम';
+  } else {
+    if (catSelect) catSelect.value = 'कागदावर पूर्ण, प्रत्यक्षात अपूर्ण किंवा निकृष्ट काम';
+  }
+
+  if (msgInput) {
+    msgInput.value = `विषय: ${issueTitle}\nतपशील: या कामाबाबत मला खालील तफावत आढळली आहे - `;
+    msgInput.focus();
+  }
+
+  const formEl = document.getElementById('citizen-feedback-form');
+  if (formEl) {
+    formEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  showToast('तक्रार फॉर्ममध्ये माहिती भरण्यासाठी जागा तयार केली आहे.', 'info');
+};
+
+// Submit Feedback to WhatsApp (+91 99707 40737)
+window.handleCitizenFeedbackSubmit = function(e) {
+  if (e) e.preventDefault();
+
+  const category = document.getElementById('feed-category') ? document.getElementById('feed-category').value : 'सामान्य माहिती';
+  const nameInput = document.getElementById('feed-name') ? document.getElementById('feed-name').value.trim() : '';
+  const phoneInput = document.getElementById('feed-phone') ? document.getElementById('feed-phone').value.trim() : '';
+  const isAnonymous = document.getElementById('feed-anonymous') ? document.getElementById('feed-anonymous').checked : true;
+  const message = document.getElementById('feed-message') ? document.getElementById('feed-message').value.trim() : '';
+
+  if (!message) {
+    showToast('कृपया सविस्तर माहिती / तक्रार लिहा.', 'error');
+    return;
+  }
+
+  const citizenName = isAnonymous ? 'गोपनीय (गुप्त)' : (nameInput || 'तुंगी बु. ग्रामस्थ');
+  const contactNo = isAnonymous ? 'गोपनीय' : (phoneInput || 'दिलेला नाही');
+
+  const textMsg = 
+`🚩 *तुंगी बु. पारदर्शकता मंच - नागरिक अभिप्राय व तक्रार* 🚩
+━━━━━━━━━━━━━━━━━━━━
+📌 *तक्रारीचा विषय:* ${category}
+👤 *नागरिकाचे नाव:* ${citizenName}
+📱 *संपर्क क्रमांक:* ${contactNo}
+
+📝 *सविस्तर माहिती / पुरावा तपशील:*
+${message}
+━━━━━━━━━━━━━━━━━━━━
+_तुंगी बु. पारदर्शकता पोर्टलवरून थेट पाठवले_`;
+
+  const waUrl = `https://wa.me/919970740737?text=${encodeURIComponent(textMsg)}`;
+  window.open(waUrl, '_blank');
+  showToast('WhatsApp उघडत आहे... आपला मेसेज पाठवा.', 'info');
+};
+
+// Save Feedback Locally
+window.saveFeedbackOffline = function() {
+  const category = document.getElementById('feed-category') ? document.getElementById('feed-category').value : 'सामान्य माहिती';
+  const nameInput = document.getElementById('feed-name') ? document.getElementById('feed-name').value.trim() : '';
+  const phoneInput = document.getElementById('feed-phone') ? document.getElementById('feed-phone').value.trim() : '';
+  const isAnonymous = document.getElementById('feed-anonymous') ? document.getElementById('feed-anonymous').checked : true;
+  const message = document.getElementById('feed-message') ? document.getElementById('feed-message').value.trim() : '';
+
+  if (!message) {
+    showToast('कृपया सविस्तर माहिती / तक्रार लिहा.', 'error');
+    return;
+  }
+
+  const reportId = 'TNG-' + Math.floor(100000 + Math.random() * 900000);
+  const reportObj = {
+    id: reportId,
+    category,
+    citizenName: isAnonymous ? 'गोपनीय' : (nameInput || 'तुंगी बु. ग्रामस्थ'),
+    phone: isAnonymous ? 'गोपनीय' : phoneInput,
+    message,
+    timestamp: new Date().toLocaleString('mr-IN')
+  };
+
+  try {
+    const existing = JSON.parse(localStorage.getItem('tungi_citizen_reports') || '[]');
+    existing.push(reportObj);
+    localStorage.setItem('tungi_citizen_reports', JSON.stringify(existing));
+  } catch (err) {}
+
+  showToast(`आपली नोंद नोंदवली गेली आहे! तक्रार संदर्भ क्र: ${reportId}`, 'info');
+
+  // Clear message
+  if (document.getElementById('feed-message')) {
+    document.getElementById('feed-message').value = '';
+  }
+};
+
 // Simple Toast Notification
 function showToast(msg, type = 'info') {
   const toast = document.createElement('div');
