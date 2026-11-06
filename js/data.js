@@ -8,9 +8,10 @@ const DataService = {
 
   async init() {
     try {
-      // 1. If embedded data is available (for zero-latency and file:// compatibility), use it
+      // 1. If embedded data is available (for zero-latency, offline & GitHub Pages), use it
       if (window.EMBEDDED_TUNGI_DATA) {
         this.data = window.EMBEDDED_TUNGI_DATA;
+        return this.data;
       }
 
       // 2. Check if user configured a custom remote Google Sheet or JSON URL in localStorage
@@ -23,7 +24,7 @@ const DataService = {
         }
       }
 
-      // 3. Try to fetch fresh data/tungi_expenditure_data.json if running on http/https
+      // 3. Try to fetch fresh data/tungi_expenditure_data.json if running on http/https without embedded data
       if (location.protocol.startsWith('http')) {
         const res = await fetch('data/tungi_expenditure_data.json');
         if (res.ok) {

@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderProofsTable();
     renderGramSabhaSection();
     setupEventListeners();
+    checkDisclaimerOnLoad();
   } catch (e) {
     console.error('Initialization error:', e);
     showToast('माहिती लोड करण्यात त्रुटी आली. कृपया पुन्हा लोड करा.', 'error');
@@ -751,6 +752,37 @@ window.openPhotoModal = function(photoUrl, title) {
 window.closePhotoModal = function() {
   document.getElementById('photo-modal').classList.add('hidden');
 };
+
+// ================= DISCLAIMER MODAL CONTROLLER =================
+
+// Open Disclaimer Modal
+window.openDisclaimerModal = function() {
+  const modal = document.getElementById('disclaimer-modal');
+  if (modal) modal.classList.remove('hidden');
+};
+
+// Accept & Close Disclaimer Modal
+window.acceptDisclaimerModal = function() {
+  const modal = document.getElementById('disclaimer-modal');
+  if (modal) modal.classList.add('hidden');
+  try {
+    sessionStorage.setItem('tungi_disclaimer_accepted', 'true');
+  } catch (e) {}
+};
+
+// Check Disclaimer on Page Load
+function checkDisclaimerOnLoad() {
+  try {
+    const accepted = sessionStorage.getItem('tungi_disclaimer_accepted');
+    if (!accepted) {
+      setTimeout(() => {
+        openDisclaimerModal();
+      }, 400);
+    }
+  } catch (e) {
+    openDisclaimerModal();
+  }
+}
 
 // Simple Toast Notification
 function showToast(msg, type = 'info') {

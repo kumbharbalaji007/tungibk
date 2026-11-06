@@ -72,10 +72,10 @@
             <i class="fas fa-file-excel mr-1.5 text-emerald-300"></i> डेटा व्यवस्थापक
           </a>
           <button 
-            onclick="document.getElementById('disclaimer-section').scrollIntoView({ behavior: 'smooth' })"
-            class="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-600 text-amber-950 shadow-sm transition">
-            <i class="fas fa-exclamation-triangle mr-1.5"></i>
-            <span>अस्वीकरण</span>
+            onclick="openDisclaimerModal()"
+            class="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-extrabold bg-amber-400 hover:bg-amber-500 text-amber-950 shadow-sm transition animate-pulse">
+            <i class="fas fa-exclamation-triangle mr-1.5 text-amber-900"></i>
+            <span>महत्त्वाचे अस्वीकरण</span>
           </button>
         </div>
       </div>
@@ -569,6 +569,99 @@
   </main>
 
   <!-- ================= MODALS ================= -->
+
+  <!-- 0. Important Disclaimer & Legal Notice Modal (Auto-popup) -->
+  <div id="disclaimer-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 hidden">
+    <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[92vh] overflow-y-auto shadow-2xl border-4 border-amber-400 modal-enter text-slate-800">
+      
+      <!-- Top Amber Warning Banner -->
+      <div class="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 p-5 sm:p-6 text-white text-center relative overflow-hidden rounded-t-[20px]">
+        <div class="absolute -right-6 -bottom-6 opacity-15 text-8xl">
+          <i class="fas fa-exclamation-triangle"></i>
+        </div>
+
+        <!-- Big Animated Warning Sign -->
+        <div class="inline-flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-white text-amber-500 shadow-xl mb-3 border-4 border-amber-200 warning-icon-pulse">
+          <i class="fas fa-exclamation-triangle text-4xl sm:text-5xl text-amber-500 animate-bounce"></i>
+        </div>
+
+        <h3 class="text-xl sm:text-2xl font-black devanagari-bold tracking-tight">
+          महत्त्वाची सूचना व जाहीर प्रकटन
+        </h3>
+        <p class="text-xs sm:text-sm font-semibold text-amber-100 uppercase tracking-wider mt-0.5">
+          Important Legal Notice & Personal Data Disclaimer
+        </p>
+      </div>
+
+      <!-- Modal Body Content -->
+      <div class="p-5 sm:p-6 space-y-4 text-xs sm:text-sm leading-relaxed">
+        
+        <!-- Marathi Section -->
+        <div class="bg-amber-50 border-2 border-amber-300 rounded-2xl p-4 sm:p-5 text-amber-950">
+          <div class="flex items-center gap-2 font-black text-amber-900 text-sm sm:text-base mb-2 devanagari-bold">
+            <i class="fas fa-shield-alt text-amber-600"></i>
+            <span>मराठी सूचना (वाचा व समजून घ्या):</span>
+          </div>
+          <ul class="space-y-2 text-xs sm:text-[13px] leading-relaxed">
+            <li class="flex items-start gap-2">
+              <span class="text-amber-600 font-bold mt-0.5">🔹</span>
+              <span><strong>केवळ वैयक्तिक संकलन (Personal Data Study):</strong> हे संकेतस्थळ आणि यावरील सर्व माहिती ही केवळ वैयक्तिक माहिती संकलन, अभ्यास आणि गावपातळीवरील पारदर्शकतेसाठी तयार केली आहे.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-red-600 font-bold mt-0.5">🚫</span>
+              <span><strong>कोणावरही तक्रारीचा हेतू नाही (Not for Complaints):</strong> या माहितीचा उपयोग कोणत्याही शासकीय अधिकाऱ्याविरुद्ध, ग्रामपंचायत लोकप्रतिनिधीविरुद्ध अथवा कर्मचाऱ्याविरुद्ध कोणतीही तक्रार (Complaint) करणे किंवा आक्षेप (Concerns) नोंदवण्यासाठी <strong>अजिबात नाही</strong>.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-emerald-700 font-bold mt-0.5">🌐</span>
+              <span><strong>अधिकृत माहितीसाठी:</strong> अचूक व कायदेशीर खात्रीसाठी नागरिकांनी भारत सरकारच्या अधिकृत eGramSwaraj (egramswaraj.gov.in) व Meeting Online (meetingonline.gov.in) या पोर्टलचाच संदर्भ घ्यावा.</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- English Section -->
+        <div class="bg-slate-50 border-2 border-slate-300 rounded-2xl p-4 sm:p-5 text-slate-800">
+          <div class="flex items-center gap-2 font-bold text-slate-900 text-sm sm:text-base mb-2">
+            <i class="fas fa-info-circle text-blue-600"></i>
+            <span>English Notice (Important Declaration):</span>
+          </div>
+          <ul class="space-y-2 text-xs sm:text-[13px] leading-relaxed text-slate-700">
+            <li class="flex items-start gap-2">
+              <span class="text-blue-600 font-bold mt-0.5">🔹</span>
+              <span><strong>Personal Data & Transparency Only:</strong> This portal is created solely for personal research, educational study, and voluntary village transparency.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-red-600 font-bold mt-0.5">🚫</span>
+              <span><strong>No Intent to Complain or Raise Concerns:</strong> This platform is <strong>NOT intended to file complaints, make allegations, or raise grievances against any government officials, elected representatives, or administrative staff</strong>.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-emerald-700 font-bold mt-0.5">🌐</span>
+              <span><strong>Official Source of Truth:</strong> For 100% verified, legal, and authentic public records, always refer directly to the Ministry of Panchayati Raj official websites (<strong>egramswaraj.gov.in</strong> & <strong>meetingonline.gov.in</strong>).</span>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="bg-gray-100 p-4 sm:p-5 rounded-b-[20px] border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <a 
+          href="https://egramswaraj.gov.in" 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          class="w-full sm:w-auto text-center px-4 py-2.5 rounded-xl text-xs font-bold text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 transition shadow-sm">
+          <i class="fas fa-external-link-alt mr-1.5 text-gray-500"></i>
+          अधिकृत पोर्टलवर जा (Govt Portal)
+        </a>
+        <button 
+          onclick="acceptDisclaimerModal()" 
+          class="w-full sm:w-auto px-6 py-3 rounded-xl text-xs sm:text-sm font-extrabold bg-gradient-to-r from-emerald-700 to-teal-800 hover:from-emerald-800 hover:to-teal-900 text-white shadow-md transition flex items-center justify-center gap-2">
+          <i class="fas fa-check-circle text-amber-300 text-base"></i>
+          <span>मला समजले व मी सहमत आहे (I Understand & Agree)</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
 
   <!-- 1. Voucher Detail Modal -->
   <div id="voucher-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 hidden">
